@@ -1,0 +1,6 @@
+PR: {{prNumber}}
+Commit: <a [href]="commitLink">{{_sha}}</a>
+
+<div *ngFor="let filename of filenames; let i = index">
+  <app-result [filename]="filename" [prNumber]="prNumber"></app-result>
+</div>
