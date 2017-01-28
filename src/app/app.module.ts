@@ -5,17 +5,17 @@ import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { ViewerComponent } from './viewer/viewer.component';
-import { ImageComponent } from './image/image.component';
 import { ResultComponent } from './result/result.component';
 import {FirebaseService} from './firebase.service';
 import {routing} from './routes';
+import { ApproveComponent } from './approve/approve.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ViewerComponent,
-    ImageComponent,
-    ResultComponent
+    ResultComponent,
+    ApproveComponent
   ],
   imports: [
     BrowserModule,
