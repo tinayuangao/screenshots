@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import {FirebaseService} from './firebase.service';
 
 @Component({
   selector: 'app-root',
@@ -9,12 +8,8 @@ import {FirebaseService} from './firebase.service';
 export class AppComponent {
   title = 'app works!';
   prNumber = '2774';
-  filenames: string[];
 
-  constructor(service: FirebaseService) {
-    service.getFilenames().then((filenames) => {
-      console.log(filenames);
-      this.filenames = filenames
-    });
+  constructor() {
+
   }
 }

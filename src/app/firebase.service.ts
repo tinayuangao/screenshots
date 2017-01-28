@@ -34,16 +34,27 @@ export class FirebaseService {
 
   getTestResult(key: string, prNumber: string): firebase.Promise<any> {
     return firebase.database().ref('screenshot').child('reports').child(prNumber)
-      .child('results').child(key).once('value').then((snapshot) => snapshot.val());
+      .child('results').child(key).once('value').then((snapshot) => {
+        console.log(snapshot.val());
+        return snapshot.val();
+      });
   }
 
   getFilenames(): firebase.Promise<any> {
     return firebase.database().ref('screenshot').child('filenames').once('value')
-      .then((snapshot) => snapshot.val());
+      .then((snapshot) => {
+        console.log(snapshot.val());
+        console.log(`filenames`);
+        return snapshot.val();
+      });
   }
 
   getCommit(prNumber: string): firebase.Promise<any> {
     return firebase.database().ref('screenshot').child('reports')
-      .child(prNumber).child('commit').once('value').then((snapshot) => snapshot.val());
+      .child(prNumber).child('commit').once('value').then((snapshot) => {
+        console.log(snapshot.val());
+        console.log(`commit`);
+        return snapshot.val();
+      });
   }
 }
