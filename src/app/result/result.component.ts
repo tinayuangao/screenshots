@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import {FirebaseService} from '../firebase.service';
 
 @Component({
@@ -15,8 +15,37 @@ export class ResultComponent implements OnInit {
   goldImageUrl: string;
   result: string;
 
+
+  @Input() collapse: boolean = false;
+  @Input() prNumber: string;
+
   @Input()
-  prNumber: string;
+  get mode() {
+    return this._mode;
+  }
+  set mode(value: 'flip' | 'side' | 'diff') {
+    this._mode = value;
+    this.modeEvent.emit(value);
+  }
+
+  _mode: 'flip' | 'side' | 'diff' = 'diff';
+
+
+  _flipping: boolean = false;
+
+  @Output('flippingChange') flippingEvent = new EventEmitter<boolean>();
+
+  @Output('modeChange') modeEvent = new EventEmitter<'flip' | 'side' | 'diff'>();
+
+  @Input()
+  get flipping() {
+    return this._flipping;
+  }
+
+  set flipping(value: boolean) {
+    this._flipping = value;
+    this.flippingEvent.emit(value);
+  }
 
   @Input()
   get filename() {
@@ -24,30 +53,26 @@ export class ResultComponent implements OnInit {
   }
 
   set filename(filename: string) {
-    console.log(this._filename);
     this._filename = filename;
     this.testName = filename.replace('.screenshot.png', '').replace('_', ' ');
-    this.service.testRef(this.prNumber).child(this._filename).getDownloadURL()
+    this.service.testRef(/*this.prNumber*/).child(this._filename).getDownloadURL()
       .then((url) => {
-        console.log(url);
         this.testImageUrl = url;
         this._changeDetectorRef.markForCheck();
       });
-    this.service.diffRef(this.prNumber).child(this._filename).getDownloadURL()
+    this.service.diffRef(/*this.prNumber*/).child(this._filename).getDownloadURL()
       .then((url) => {
-        console.log(url);
         this.diffImageUrl = url;
         this._changeDetectorRef.markForCheck();
       });
-    this.service.goldRef(this.prNumber).child(this._filename).getDownloadURL()
+    this.service.goldRef(/*this.prNumber*/).child(this._filename).getDownloadURL()
       .then((url) => {
-        console.log(url);
         this.goldImageUrl = url;
         this._changeDetectorRef.markForCheck();
       });
-    this.service.getTestResult(this._filename.replace('.screenshot.png', ''), this.prNumber)
+    this.service.getTestResult(this._filename.replace('.screenshot.png', '')/*, this.prNumber*/)
       .then((result) => {
-        console.log(result);
+        this.collapse = result;
         this.result = result ? 'Passed' : 'Failed';
         this._changeDetectorRef.markForCheck();
       });

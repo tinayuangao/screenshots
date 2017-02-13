@@ -1,6 +1,24 @@
-PR: {{prNumber}}
-Commit: <a [href]="commitLink">{{_sha}}</a>
+<md-sidenav-container>
+  <md-card>
+    <p><a md-button [href]="prLink" target="_blank" color="primary">Pull Request: {{prNumber}}</a></p>
+    <p><a md-button [href]="commitLink" target="_blank" color="primary">Commit: {{_sha}}</a></p>
+    <p><a md-button [href]="travisLink" target="_blank" color="primary">Travis: {{_travis}}</a></p>
+    <p><app-approve [prNumber]="prNumber"></app-approve> Please go to Travis to restart the job manually after approval. </p>
+    <p *ngIf="false"> <!-- this feature is disabled . Should restart travis job after approval -->
+      <a md-button color="primary" (click)="updateGithubStatus('pending')">Set Github to Pending</a>
+      <a md-button color="primary" (click)="updateGithubStatus('success')">Set Github to Success</a>
+    </p>
+    <md-card-actions>
+      <button md-raised-button color="primary" (click)="collapse = true">Collapse All</button>
+      <button md-raised-button color="primary" (click)="collapse = false">Expand All</button>
+    </md-card-actions>
+  </md-card>
 
-<div *ngFor="let filename of filenames; let i = index">
-  <app-result [filename]="filename" [prNumber]="prNumber"></app-result>
-</div>
+  <div *ngFor="let filename of filenames; let i = index">
+    <app-result [filename]="filename"
+                [prNumber]="prNumber"
+                [(mode)]="mode"
+                [(flipping)]="flipping"
+                [collapse]="collapse"></app-result>
+  </div>
+</md-sidenav-container>
