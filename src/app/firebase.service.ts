@@ -136,7 +136,6 @@ export class FirebaseService {
       return snapshot.val();
     }).then((filenames: string[]) => {
       let promises = [firebase.database().ref('screenshot').child('filenames').set(filenames)];
-
       filenames.forEach((filename: string) => {
         let file = firebase.storage().ref('screenshots').child(this.prNumber).child('test').child(filename);
         file.getDownloadURL().then((url) => {
@@ -147,10 +146,12 @@ export class FirebaseService {
             let ref = firebase.storage().ref('golds').child(filename);
             promises.push(ref.putString(this._getBase64Image(img), 'base64').then((snapshot) => {
               return true;
-            }));
+            } , function(error) {
+              // Handle unsuccessful uploads
+              console.log(`error ${error}`);
+            },));
           };
         });
-
       });
       return firebase.Promise.all(promises);
     }).then((r) => {
