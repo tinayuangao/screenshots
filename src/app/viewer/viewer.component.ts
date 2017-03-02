@@ -24,7 +24,7 @@ export class ViewerComponent implements OnInit {
 
   @Input() mode: string = 'diff';
 
-  @Input() collapse: boolean = false;
+  collapse: boolean[];
 
   get githubToken() {
     return this._service.githubToken;
@@ -53,8 +53,10 @@ export class ViewerComponent implements OnInit {
     // TODO(tinagao): Get a list of files
     this._service.getFilenames().then((filenames) => {
       let files = [];
+      this.collapse = [];
       filenames.forEach((file) => {
         files.push(file);
+        this.collapse.push(true);
       });
       this.filenames = files;
       this._changeDetectorRef.markForCheck();
@@ -84,6 +86,14 @@ export class ViewerComponent implements OnInit {
     this._service.hasApprovalPermission().then((result) => {
       this.hasPermission = result;
     });
+  }
+
+  setCollapse(value: boolean) {
+    if (this.collapse) {
+      for (let i = 0; i < this.collapse.length; i++) {
+        this.collapse[i] = value;
+      }
+    }
   }
 
   updateGithubStatus(status: string) {

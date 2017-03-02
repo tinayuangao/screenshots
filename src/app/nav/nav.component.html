@@ -1,0 +1,6 @@
+<md-toolbar color="primary">
+  <div *ngIf="signedIn">{{email}}</div>
+  <div *ngIf="noGithubToken">(Without Github Token)</div>
+  <button md-button (click)="signInGithub()" *ngIf="!signedIn || noGithubToken">Sign In with Github</button>
+</md-toolbar>
+

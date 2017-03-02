@@ -11,7 +11,6 @@ import { ViewerComponent } from './viewer/viewer.component';
 import { ResultComponent } from './result/result.component';
 import { ApproveComponent } from './approve/approve.component';
 import { NavComponent } from './nav/nav.component';
-import { ModeComponent } from './mode/mode.component';
 
 @NgModule({
   declarations: [
@@ -19,8 +18,7 @@ import { ModeComponent } from './mode/mode.component';
     ViewerComponent,
     ResultComponent,
     ApproveComponent,
-    NavComponent,
-    ModeComponent
+    NavComponent
   ],
   imports: [
     BrowserModule,

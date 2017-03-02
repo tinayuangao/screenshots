@@ -8,6 +8,8 @@ export class FirebaseService {
   user: any;
   prNumber: string;
   sha: string;
+  mode: 'flip' | 'side' | 'diff' = 'diff';
+  flipping: boolean = false;
 
   constructor() {
     // Initialize Firebase
@@ -19,6 +21,10 @@ export class FirebaseService {
       messagingSenderId: "975527407245"
     };
     firebase.initializeApp(config);
+  }
+
+  flip() {
+    this.flipping = !this.flipping;
   }
 
   _storageRef(/*prNumber: string*/): firebase.storage.Reference {

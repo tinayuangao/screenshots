@@ -16,7 +16,8 @@ export class ResultComponent implements OnInit {
   result: string;
 
 
-  @Input() collapse: boolean = false;
+
+  @Input() collapse: boolean = true;
   @Input() prNumber: string;
 
   @Input()
@@ -26,6 +27,7 @@ export class ResultComponent implements OnInit {
   set mode(value: 'flip' | 'side' | 'diff') {
     this._mode = value;
     this.modeEvent.emit(value);
+    this._changeDetectorRef.markForCheck();
   }
 
   _mode: 'flip' | 'side' | 'diff' = 'diff';
@@ -37,6 +39,8 @@ export class ResultComponent implements OnInit {
 
   @Output('modeChange') modeEvent = new EventEmitter<'flip' | 'side' | 'diff'>();
 
+  @Output('collapseChange') collapseEvent = new EventEmitter<boolean>();
+
   @Input()
   get flipping() {
     return this._flipping;
@@ -45,6 +49,7 @@ export class ResultComponent implements OnInit {
   set flipping(value: boolean) {
     this._flipping = value;
     this.flippingEvent.emit(value);
+    this._changeDetectorRef.markForCheck();
   }
 
   @Input()
@@ -83,4 +88,7 @@ export class ResultComponent implements OnInit {
   ngOnInit() {
   }
 
+  flip() {
+    this.flipping = !this._flipping;
+  }
 }

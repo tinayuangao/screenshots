@@ -1,7 +1,7 @@
 <md-card>
   <md-card-header>
     <md-card-title>
-      <md-icon (click)="collapse = !collapse">{{collapse ? 'keyboard_arrow_right' : 'keyboard_arrow_down'}}</md-icon>
+      <md-icon (click)="collapse = !collapse; collapseEvent.emit(collapse)">{{collapse ? 'keyboard_arrow_right' : 'keyboard_arrow_down'}}</md-icon>
       {{testName}}
     </md-card-title>
     <md-card-subtitle [ngClass]="result">{{result}}</md-card-subtitle>
@@ -23,6 +23,17 @@
     </div>
   </md-card-content>
   <md-card-actions>
-    <app-mode [(mode)]="mode" [(flipping)]="flipping"></app-mode>
+    <md-button-toggle-group [(ngModel)]="mode" class="mode-section">
+      <md-button-toggle value="diff">
+        Diff
+      </md-button-toggle>
+      <md-button-toggle value="flip">
+        Flip
+      </md-button-toggle>
+      <md-button-toggle value="side">
+        Side by side
+      </md-button-toggle>
+    </md-button-toggle-group>
+    <button md-button color="primary" (click)="flip()" *ngIf="mode == 'flip'">Flip</button>
   </md-card-actions>
 </md-card>
