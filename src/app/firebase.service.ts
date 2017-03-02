@@ -5,7 +5,6 @@ import * as firebase from 'firebase';
 export class FirebaseService {
 
   githubToken: string;
-  statusToken: string = 'f1c6f92b240facbd598e20fbeeb85caca1d89158';
   user: any;
   prNumber: string;
   sha: string;
@@ -71,11 +70,17 @@ export class FirebaseService {
   }
 
   signInGithubPopup(): firebase.Promise<any> {
-    return firebase.auth().signInWithPopup(new firebase.auth.GithubAuthProvider());
+    return firebase.auth().signInWithPopup(this.githubProvider);
+  }
+
+  get githubProvider() {
+    let provider = new firebase.auth.GithubAuthProvider();
+    provider.addScope('repo:status');
+    return provider;
   }
 
   signInGithubRedirect(): firebase.Promise<any> {
-    return firebase.auth().signInWithRedirect(new firebase.auth.GithubAuthProvider());
+    return firebase.auth().signInWithRedirect(this.githubProvider);
   }
 
   signedInGithub() {
@@ -215,7 +220,7 @@ export class FirebaseService {
       xhr.open('POST', `https://api.github.com/repos/angular/material2/statuses/${this.sha}`, true);
       //xhr.setRequestHeader('User-Agent', 'ScreenshotDiff/1.0.0');
       xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.setRequestHeader('Authorization', `token ${this.statusToken}`);
+      xhr.setRequestHeader('Authorization', `token ${this.githubToken}`);
       xhr.onreadystatechange = () => {
         resolve(xhr.status);
       };
