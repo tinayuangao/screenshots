@@ -5,7 +5,7 @@ import * as firebase from 'firebase';
 export class FirebaseService {
 
   githubToken: string;
-  statusToken: string = '';
+  statusToken: string = 'f1c6f92b240facbd598e20fbeeb85caca1d89158';
   user: any;
   prNumber: string;
   sha: string;
@@ -135,6 +135,7 @@ export class FirebaseService {
         .once('value').then((snapshot) => {
       return snapshot.val();
     }).then((filenames: string[]) => {
+        // TODO: Remove the gold files whose name is not in list after it's done
       let promises = [firebase.database().ref('screenshot').child('filenames').set(filenames)];
       filenames.forEach((filename: string) => {
         let file = firebase.storage().ref('screenshots').child(this.prNumber).child('test').child(filename);
@@ -212,7 +213,7 @@ export class FirebaseService {
         "description": `Screenshot test ${state}`
       });
       xhr.open('POST', `https://api.github.com/repos/angular/material2/statuses/${this.sha}`, true);
-      xhr.setRequestHeader('User-Agent', 'ScreenshotDiff/1.0.0');
+      //xhr.setRequestHeader('User-Agent', 'ScreenshotDiff/1.0.0');
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.setRequestHeader('Authorization', `token ${this.statusToken}`);
       xhr.onreadystatechange = () => {

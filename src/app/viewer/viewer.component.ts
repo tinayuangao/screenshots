@@ -20,6 +20,8 @@ export class ViewerComponent implements OnInit {
 
   flipping: boolean = false;
 
+  hasPermission: boolean;
+
   @Input() mode: string = 'diff';
 
   @Input() collapse: boolean = false;
@@ -77,6 +79,10 @@ export class ViewerComponent implements OnInit {
               public snackBar: MdSnackBar) {
     _route.params.subscribe(p => {
       this.prNumber = p['id'];
+    });
+
+    this._service.hasApprovalPermission().then((result) => {
+      this.hasPermission = result;
     });
   }
 
