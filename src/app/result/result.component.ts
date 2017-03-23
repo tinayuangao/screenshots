@@ -15,8 +15,6 @@ export class ResultComponent implements OnInit {
   goldImageUrl: string;
   result: string;
 
-
-
   @Input() collapse: boolean = true;
   @Input() prNumber: string;
 
@@ -60,22 +58,22 @@ export class ResultComponent implements OnInit {
   set filename(filename: string) {
     this._filename = filename;
     this.testName = filename.replace('.screenshot.png', '').replace('_', ' ');
-    this.service.testRef(/*this.prNumber*/).child(this._filename).getDownloadURL()
+    this.service.testRef().child(this._filename).getDownloadURL()
       .then((url) => {
         this.testImageUrl = url;
         this._changeDetectorRef.markForCheck();
       });
-    this.service.diffRef(/*this.prNumber*/).child(this._filename).getDownloadURL()
+    this.service.diffRef().child(this._filename).getDownloadURL()
       .then((url) => {
         this.diffImageUrl = url;
         this._changeDetectorRef.markForCheck();
       });
-    this.service.goldRef(/*this.prNumber*/).child(this._filename).getDownloadURL()
+    this.service.goldRef().child(this._filename).getDownloadURL()
       .then((url) => {
         this.goldImageUrl = url;
         this._changeDetectorRef.markForCheck();
       });
-    this.service.getTestResult(this._filename.replace('.screenshot.png', '')/*, this.prNumber*/)
+    this.service.getTestResult(this._filename.replace('.screenshot.png', ''))
       .then((result) => {
         this.collapse = result;
         this.result = result ? 'Passed' : 'Failed';

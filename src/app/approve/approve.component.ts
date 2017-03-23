@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {MdSnackBar} from '@angular/material';
 import {FirebaseService} from '../firebase.service';
 
@@ -9,38 +9,15 @@ import {FirebaseService} from '../firebase.service';
   styleUrls: ['./approve.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ApproveComponent implements OnInit {
-
-  hasPermission: boolean = false;
-  approved: boolean = false;
-
-  @Input()
-  prNumber: string;
-
+export class ApproveComponent {
   constructor(private _service: FirebaseService,
-              private _changeDetector: ChangeDetectorRef,
-              public snackBar: MdSnackBar) {
-    this._service.hasApprovalPermission().then((hasPermission) => {
-      this.hasPermission = hasPermission;
-      this._changeDetector.markForCheck();
-    });
-  }
+              public snackBar: MdSnackBar) {}
 
   approve() {
-    this._service.approveByUser().then((result) => {
-      if (result) {
-        this.snackBar.open(`Approved`, '', {duration: 10000});
-      }
-      this.approved = result;
-      this._changeDetector.markForCheck();
+    this._service.approvePR().then((result) => {
+      this.snackBar.open(`Approved`, '', {duration: 10000});
+    }).catch((error) => {
+      this.snackBar.open(`Error ${error}`, '', {duration: 10000});
     });
   }
-
-  restartTravis() {
-    this._service.restartTravisJob('');
-  }
-
-  ngOnInit() {
-  }
-
 }

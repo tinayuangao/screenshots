@@ -27,56 +27,57 @@ export class FirebaseService {
     this.flipping = !this.flipping;
   }
 
-  _storageRef(/*prNumber: string*/): firebase.storage.Reference {
+  _storageRef(): firebase.storage.Reference {
     return firebase.storage().ref('screenshots').child(this.prNumber);
   }
 
-  testRef(/*prNumber: string*/): firebase.storage.Reference {
+  testRef(): firebase.storage.Reference {
     return this._storageRef().child('test');
   }
 
-  diffRef(/*prNumber: string*/): firebase.storage.Reference {
+  diffRef(): firebase.storage.Reference {
     return this._storageRef().child('diff');
   }
 
-  goldRef(/*prNumber: string*/): firebase.storage.Reference {
-    return firebase.storage().ref('golds')
+  goldRef(): firebase.storage.Reference {
+    return firebase.storage().ref('goldens');
   }
 
-  getTestResult(key: string/*, prNumber: string*/): firebase.Promise<any> {
-    return firebase.database().ref('screenshot').child('reports').child(this.prNumber)
-      .child('results').child(key).once('value').then((snapshot) => {
+  _databaseRef(): firebase.database.Reference {
+    return firebase.database().ref('screenshot').child('reports').child(this.prNumber);
+  }
+
+  getTestResult(key: string): firebase.Promise<any> {
+    return this._databaseRef() .child('results').child(key).once('value').then((snapshot) => {
         return snapshot.val();
       });
   }
 
   getFilenames(): firebase.Promise<any> {
-    return firebase.database().ref('screenshot').child('filenames').once('value')
+    return firebase.database().ref('screenshot').child('goldens').once('value')
       .then((snapshot) => {
-        return snapshot.val();
+        let filenames = [];
+        snapshot.forEach((childSnapshot) => {
+          filenames.push(`${childSnapshot.key}.screenshot.png`);
+        });
+        return filenames;
       });
   }
 
-  getCommit(/*prNumber: string*/): firebase.Promise<any> {
-    return firebase.database().ref('screenshot').child('reports')
-      .child(this.prNumber).child('sha').once('value').then((snapshot) => {
+  getCommit(): firebase.Promise<any> {
+    return this._databaseRef().child('sha').once('value').then((snapshot) => {
         return snapshot.val();
       });
   }
 
   getTravisJobId(): firebase.Promise<any> {
-    return firebase.database().ref('screenshot').child('reports')
-      .child(this.prNumber).child('travis').once('value').then((snapshot) => {
+    return this._databaseRef().child('travis').once('value').then((snapshot) => {
         return snapshot.val();
       });
   }
 
   currentUser() {
     return firebase.auth().currentUser;
-  }
-
-  signInGithubPopup(): firebase.Promise<any> {
-    return firebase.auth().signInWithPopup(this.githubProvider);
   }
 
   get githubProvider() {
@@ -113,24 +114,12 @@ export class FirebaseService {
     });
   }
 
-  hasApprovalPermission(): firebase.Promise<boolean> {
-    return firebase.database().ref('whitelist').once('value')
-      .then((snapshot) => {
-        if (!this.user || !this.user.providerData || !this.user.providerData[0].uid) {
-          return false;
-        }
-        let ids: string[] = snapshot.val();
-        let isWhiteListed: boolean = false;
-        ids.forEach((id) => {
-          if (id == this.user.providerData[0].uid) {
-            isWhiteListed = true;
-          }
-        });
-        return isWhiteListed;
-      });
+
+  approvePR() {
+    return this._databaseRef().child('approved').set(this.sha);
   }
 
-  approveByUser(/*prNumber: string*/) {
+  approveByUser() {
     return this.hasApprovalPermission().then((hasPermission) => {
       if (hasPermission) {
         return this._updateGolds();
@@ -141,8 +130,8 @@ export class FirebaseService {
     });
   }
 
-  _updateGolds(/*prNumber: string*/) {
-    return firebase.database().ref('screenshot/reports').child(this.prNumber).child(`filenames`)
+  _updateGolds() {
+    return this._databaseRef().child(`filenames`)
         .once('value').then((snapshot) => {
       return snapshot.val();
     }).then((filenames: string[]) => {
@@ -169,6 +158,23 @@ export class FirebaseService {
     }).then((r) => {
       return true;
     });
+  }
+
+  hasApprovalPermission(): firebase.Promise<boolean> {
+    return firebase.database().ref('whitelist').once('value')
+      .then((snapshot) => {
+        if (!this.user || !this.user.providerData || !this.user.providerData[0].uid) {
+          return false;
+        }
+        let ids: string[] = snapshot.val();
+        let isWhiteListed: boolean = false;
+        ids.forEach((id) => {
+          if (id == this.user.providerData[0].uid) {
+            isWhiteListed = true;
+          }
+        });
+        return isWhiteListed;
+      });
   }
 
   _getBase64Image(img: HTMLImageElement) {
