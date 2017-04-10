@@ -1,27 +1,65 @@
-<md-card>
-  <p><a md-button [href]="prLink" target="_blank" color="primary">Pull Request: {{prNumber}}</a></p>
-  <p><a md-button [href]="commitLink" target="_blank" color="primary">Commit: {{_sha}}</a></p>
-  <p><a md-button [href]="travisLink" target="_blank" color="primary">Travis: {{_travis}}</a></p>
-  <p>
-    <app-approve></app-approve>
-    Approval will copy all test results to golds.
-    Please go to Travis to restart the job manually after approval.
-  </p>
-  <p *ngIf="hasPermission"> <!-- this feature is disabled . Should restart travis job after approval -->
-    <a md-button color="primary" (click)="updateGithubStatus('success')">Set Github to Success</a>
-    This will not update golds, but only change the screenshot test status on current commit.
-    Once the PR checked in, the golds will be updated automatically.
-  </p>
-  <md-card-actions>
-    <button md-raised-button color="primary" (click)="setCollapse(true)">Collapse All</button>
-    <button md-raised-button color="primary" (click)="setCollapse(false)">Expand All</button>
-  </md-card-actions>
-</md-card>
+<div *ngIf="screenshotResult.prNumber">
+  <md-card>
+    <p>
+      <a md-button [href]="screenshotResult.prLink" target="_blank" color="primary">
+        Pull Request: {{screenshotResult.prNumber}}
+      </a>
+      <a md-button [href]="screenshotResult.commitLink" target="_blank" color="primary">
+        Commit: {{screenshotResult.sha}}
+      </a>
+      <a md-button [href]="screenshotResult.travisLink" target="_blank" color="primary">
+        Travis: {{screenshotResult.travis}}
+      </a>
+    </p>
+    <p *ngIf="!isApproved">
+      <button md-button (click)="approve()"  color="primary" >
+        Copy To Goldens
+      </button>
+      <span class="description">
+        This will copy all failed test result images to goldens.
+        Please go to Travis to restart the job manually after approval.
+      </span>
+    </p>
+    <p *ngIf="isApproved">
+      <button md-button disabled>Approved.</button>
+      <span class="description">
+        Test images should be the same as golden images. Expand all to verify.
+      </span>
+    </p>
+    <p>
+      <button md-button
+              [disabled]="screenshotResult.result" color="primary"
+              (click)="updateGithubStatus()">
+        Set Github to Success
+      </button>
+      <a md-icon-button>
+        <md-icon *ngIf="screenshotResult.githubStatus == 'success'" style="color:green">check</md-icon>
+        <md-icon  *ngIf="screenshotResult.githubStatus == 'failure'" style="color:red">close</md-icon>
+      </a>
+      <a md-tooltip="Refresh Github Status" (click)="refreshGithubStatus()" md-icon-button>
+        <md-icon>refresh</md-icon>
+      </a>
+      <br>
+      <span class="description">
+        This will not update golds, but only change the screenshot test status on current commit.
+        Once the PR checked in, the golds will be updated automatically.
+      </span>
+    </p>
+    <md-card-actions>
+      <button md-raised-button color="primary" (click)="screenshotResult.setCollapse(true)">
+        Collapse All
+      </button>
+      <button md-raised-button color="primary" (click)="screenshotResult.setCollapse(false)">
+        Expand All
+      </button>
+    </md-card-actions>
+  </md-card>
 
-<div *ngFor="let filename of filenames; let i = index">
-  <app-result [filename]="filename"
-              [prNumber]="prNumber"
-              [(mode)]="mode"
-              [(flipping)]="flipping"
-              [(collapse)]="collapse[i]"></app-result>
+  <div *ngFor="let testname of screenshotResult.testnames; let i = index">
+    <app-result [filename]="testname"
+                [result]="screenshotResult.results.get(testname)"
+                [(mode)]="screenshotResult.mode"
+                [(flipping)]="screenshotResult.flipping"
+                [(collapse)]="screenshotResult.collapse[i]"></app-result>
+  </div>
 </div>

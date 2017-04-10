@@ -9,7 +9,6 @@ import {routing} from './routes';
 import { AppComponent } from './app.component';
 import { ViewerComponent } from './viewer/viewer.component';
 import { ResultComponent } from './result/result.component';
-import { ApproveComponent } from './approve/approve.component';
 import { NavComponent } from './nav/nav.component';
 
 @NgModule({
@@ -17,7 +16,6 @@ import { NavComponent } from './nav/nav.component';
     AppComponent,
     ViewerComponent,
     ResultComponent,
-    ApproveComponent,
     NavComponent
   ],
   imports: [

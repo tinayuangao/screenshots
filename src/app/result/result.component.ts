@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Output, EventEmitter } from '@angular/core';
 import {FirebaseService} from '../firebase.service';
 
 @Component({
@@ -7,17 +7,36 @@ import {FirebaseService} from '../firebase.service';
   styleUrls: ['./result.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ResultComponent implements OnInit {
-  _filename: string;
+export class ResultComponent {
+
+  /** Test name, display on top of the result card */
   testName: string;
+
+  /** Test, diff and golden image urls */
   testImageUrl: string;
   diffImageUrl: string;
   goldImageUrl: string;
-  result: string;
 
+
+  /** Test result, auto set collapse to be the same as the result value */
+  @Input()
+  get result() {
+    return this._result;
+  }
+  set result(value: boolean) {
+    this._result = value;
+    this.collapse = value;
+  }
+  _result: boolean;
+
+  get resultText() {
+    return this._result ? 'Passed' : 'Failed';
+  }
+
+  /** Collapse: whether collapse or expand the card to show images */
   @Input() collapse: boolean = true;
-  @Input() prNumber: string;
 
+  /** Mode: the result card has three modes, flip, side by side, and diff */
   @Input()
   get mode() {
     return this._mode;
@@ -27,18 +46,9 @@ export class ResultComponent implements OnInit {
     this.modeEvent.emit(value);
     this._changeDetectorRef.markForCheck();
   }
-
   _mode: 'flip' | 'side' | 'diff' = 'diff';
 
-
-  _flipping: boolean = false;
-
-  @Output('flippingChange') flippingEvent = new EventEmitter<boolean>();
-
-  @Output('modeChange') modeEvent = new EventEmitter<'flip' | 'side' | 'diff'>();
-
-  @Output('collapseChange') collapseEvent = new EventEmitter<boolean>();
-
+  /** When mode is "flip" whether we show the test image or the golden image */
   @Input()
   get flipping() {
     return this._flipping;
@@ -49,15 +59,16 @@ export class ResultComponent implements OnInit {
     this.flippingEvent.emit(value);
     this._changeDetectorRef.markForCheck();
   }
+   _flipping: boolean = false;
 
+   /** Filename, the test file name. */
   @Input()
   get filename() {
     return this._filename;
   }
-
   set filename(filename: string) {
-    this._filename = filename;
-    this.testName = filename.replace('.screenshot.png', '').replace('_', ' ');
+    this._filename = `${filename}.screenshot.png`;
+    this.testName = filename.replace(/[_]/g, ' ');
     this.service.testRef().child(this._filename).getDownloadURL()
       .then((url) => {
         this.testImageUrl = url;
@@ -73,20 +84,18 @@ export class ResultComponent implements OnInit {
         this.goldImageUrl = url;
         this._changeDetectorRef.markForCheck();
       });
-    this.service.getTestResult(this._filename.replace('.screenshot.png', ''))
-      .then((result) => {
-        this.collapse = result;
-        this.result = result ? 'Passed' : 'Failed';
-        this._changeDetectorRef.markForCheck();
-      });
   }
+  _filename: string;
+
+  @Output('flippingChange') flippingEvent = new EventEmitter<boolean>();
+
+  @Output('modeChange') modeEvent = new EventEmitter<'flip' | 'side' | 'diff'>();
+
+  @Output('collapseChange') collapseEvent = new EventEmitter<boolean>();
 
   constructor(public service: FirebaseService, private _changeDetectorRef: ChangeDetectorRef) { }
 
-  ngOnInit() {
-  }
-
   flip() {
-    this.flipping = !this._flipping;
+    this.service.screenshotResult.flipping = !this.service.screenshotResult.flipping;
   }
 }

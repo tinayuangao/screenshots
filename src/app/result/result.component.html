@@ -4,7 +4,7 @@
       <md-icon (click)="collapse = !collapse; collapseEvent.emit(collapse)">{{collapse ? 'keyboard_arrow_right' : 'keyboard_arrow_down'}}</md-icon>
       {{testName}}
     </md-card-title>
-    <md-card-subtitle [ngClass]="result">{{result}}</md-card-subtitle>
+    <md-card-subtitle [ngClass]="resultText">{{resultText}}</md-card-subtitle>
   </md-card-header>
   <md-card-content *ngIf="collapse == false">
     <div class="images-section" [ngClass]="mode" [class.flipping]="flipping">
