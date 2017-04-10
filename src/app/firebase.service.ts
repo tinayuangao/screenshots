@@ -151,7 +151,7 @@ export class FirebaseService {
 
   /** Change the PR status to approved to let Firebase Functions copy test images to goldens */
   approvePR() {
-    return this._databaseRef().child('approved').set(this.screenshotResult.sha);
+    return this._databaseRef().child('approved').set(`${this.screenshotResult.sha}-${new Date()}`);
   }
 
   /** Change the commit's screenshot test status on GitHub */

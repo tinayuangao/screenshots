@@ -11,7 +11,9 @@ import {FirebaseService} from '../firebase.service';
 export class ViewerComponent {
 
   get isApproved() {
-    return this._service.screenshotResult.approved == this._service.screenshotResult.sha;
+    return this._service.screenshotResult.approved &&
+      this._service.screenshotResult.sha &&
+      this._service.screenshotResult.approved.indexOf(this._service.screenshotResult.sha) == 0;
   }
 
   get screenshotResult() {
